@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <bean id="taskJob" class="com.itty.common.task.AttendCheckTask"></bean>
+    <!--定义任务bean-->
+    <bean id="jobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="concurrent" value="false"/>
+        <property name="targetObject" ref="taskJob"/>
+        <property name="targetMethod" value="checkAttend"/>
+    </bean>
+    <!--定义触发器的bean，一个触发器只能和一个任务进行绑定-->
+    <bean id="attendCheck" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="jobDetail"/>
+        <property name="cronExpression">
+            <value>0/30 * * * * ?</value>
+        </property>
+    </bean>
+    <!--定义调度器-->
+    <bean id="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="triggers">
+            <list>
+                <ref bean="attendCheck"/>
+            </list>
+        </property>
+    </bean>
+</beans>
